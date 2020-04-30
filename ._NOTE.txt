@@ -1,0 +1,5 @@
+API shopee:
+https://shopee.vn/api/v2/search_items/?by=relevancy&keyword=n%E1%BB%93i%20chi%C3%AAn%20kh%C3%B4ng%20d%E1%BA%A7u&limit=50&newest=0&order=desc&page_type=search&version=2
+
+API Sendo
+https://www.sendo.vn/m/wap_v2/search/product?p=1&platform=web&q=iphone%2011&s=60&search_algo=algo6&sortType=rank
