@@ -1,10 +1,74 @@
 html, body {
     padding: 0;
     margin: 0;
-    background-color: aliceblue;
 }
 
-.container {
-    max-width: 900px;
-    margin: 10px auto;
+.search-box {
+    margin: 32px;
+}
+
+.card img {
+    height: 250px;
+    width: auto;
+    max-width: 100%;
+    margin: auto;
+}
+
+.col-6, .col-3 {
+    padding: 10px;
+}
+
+h5 {
+    font-size: 18px;
+    overflow: hidden;
+    word-wrap: break-word; 
+    line-height: 1.3rem;
+    height: 2.6rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    letter-spacing: 1px;
+}
+
+.shopee .card {
+    /* border-color: #f53d2d; */
+    transition: .3s;
+}
+
+.shopee small {
+    color: #f53d2d;
+}
+
+.shopee .card:hover {
+    box-shadow: 3px 3px 10px 0px #f53e2d57;
+    transition: .3s;
+}
+
+.sendo .card {
+    /* border-color: #e5101d; */
+    transition: .3s;
+}
+
+.sendo small {
+    color: #e5101d;
+}
+
+.sendo .card:hover {
+    box-shadow: 3px 3px 10px 0px #e5101d45;
+    transition: .3s;
+}
+
+
+.nguyenkim .card {
+    /* border-color: #fe0000; */
+    transition: .3s;
+}
+
+.nguyenkim small {
+    color: #fe0000;
+}
+
+.nguyenkim .card:hover {
+    box-shadow: 3px 3px 10px 0px #fe000059;
+    transition: .3s;
 }
