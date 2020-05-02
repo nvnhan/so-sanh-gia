@@ -24,6 +24,7 @@
                                 class="form-control"
                                 name="q"
                                 placeholder="Nhập từ khóa..."
+                                value="{{$q}}"
                             />
                         </div>
                         <div class="col-3">

@@ -24,7 +24,7 @@ class HomeController extends Controller
             else if ($sort == 'price-asc') usort($data, function ($a, $b) { return $a->price > $b->price; });
         }
 
-        return view('home', compact('data'));
+        return view('home', compact('data', 'q', 'sort'));
     }
 
     public function get_nguyen_kim_data(string $q, $sort = '')
