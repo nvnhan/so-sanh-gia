@@ -16,9 +16,9 @@ class HomeController extends Controller
 
         if (!empty($q)) {
             $data = array_merge(
-                self::get_nguyen_kim_data($q, $sort),
-                self::get_shopee_data($q, $sort),
-                self::get_sendo_data($q, $sort)
+                self::get_nguyen_kim_data(urlencode($q), $sort),
+                self::get_shopee_data(urlencode($q), $sort),
+                self::get_sendo_data(urlencode($q), $sort)
             );
             if (empty($sort)) shuffle($data);
             else if ($sort == 'price-asc') usort($data, function ($a, $b) { return $a->price > $b->price; });
@@ -29,11 +29,11 @@ class HomeController extends Controller
 
     public function get_nguyen_kim_data(string $q, $sort = '')
     {
-        $nguyenkim_url = "https://www.nguyenkim.com/tim-kiem.html?&q=$q&sort_by=relevance&sort_order=asc";
+        $nguyenkim_url = "https://www.nguyenkim.com/tim-kiem.html?q=$q&sort_by=relevance&sort_order=asc";
         if ($sort == 'price-asc')
-            $nguyenkim_url = "https://www.nguyenkim.com/tim-kiem.html?&q=$q&sort_by=price&sort_order=asc";
+            $nguyenkim_url = "https://www.nguyenkim.com/tim-kiem.html?q=$q&sort_by=price&sort_order=asc";
         else if ($sort == 'price-desc')
-            $nguyenkim_url = "https://www.nguyenkim.com/tim-kiem.html?&q=$q&sort_by=price&sort_order=desc";
+            $nguyenkim_url = "https://www.nguyenkim.com/tim-kiem.html?q=$q&sort_by=price&sort_order=desc";
 
         // Document here: https://simplehtmldom.sourceforge.io/manual.htm
         $content = file_get_html($nguyenkim_url);
