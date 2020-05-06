@@ -4,3 +4,19 @@ https://shopee.vn/api/v2/search_items/?by=relevancy&keyword=n%E1%BB%93i%20chi%C3
 API Sendo
 https://www.sendo.vn/m/wap_v2/search/product?q=iphone%2011&sortType=price_desc
 https://www.sendo.vn/m/wap_v2/search/product?q=iphone%2011&sortType=rank
+
+
+
+hoanghamobile: 
+https://hoanghamobile.com/tim-kiem.html?kwd=iphone
+
+CellPhoneS
+https://cellphones.com.vn/catalogsearch/result/?q=iphone
+
+FptShop
+https://fptshop.com.vn/tim-kiem/iphone-11
+
+https://didongviet.vn/catalogsearch/result/?q=iphone
+
+
+viettelstore, dienmaycholon, xtmobile, bachlongmobile, phucanh

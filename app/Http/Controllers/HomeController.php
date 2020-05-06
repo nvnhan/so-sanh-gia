@@ -17,11 +17,14 @@ class HomeController extends Controller
         if (!empty($q)) {
             $data = array_merge(
                 self::get_nguyen_kim_data(urlencode($q), $sort),
+                self::get_tgdd_data(urlencode($q), $sort),
                 self::get_shopee_data(urlencode($q), $sort),
                 self::get_sendo_data(urlencode($q), $sort)
             );
             if (empty($sort)) shuffle($data);
-            else if ($sort == 'price-asc') usort($data, function ($a, $b) { return $a->price > $b->price; });
+            else if ($sort == 'price-asc') usort($data, function ($a, $b) {
+                return $a->price > $b->price;
+            });
         }
 
         return view('home', compact('data', 'q', 'sort'));
@@ -59,6 +62,38 @@ class HomeController extends Controller
             if ($cnt == 20) break;
         }
         return $nguyenkim_parse_data;
+    }
+
+    public function get_tgdd_data(string $q, $sort = '')
+    {
+        $url = "https://www.thegioididong.com/aj/SearchV2/Product?KeyWord=$q&OrderBy=0";
+        if ($sort == 'price-asc')
+            $url = "https://www.thegioididong.com/aj/SearchV2/Product?KeyWord=$q&OrderBy=2";
+        else if ($sort == 'price-desc')
+            $url = "https://www.thegioididong.com/aj/SearchV2/Product?KeyWord=$q&OrderBy=1";
+
+        // Document here: https://simplehtmldom.sourceforge.io/manual.htm
+        $content = file_get_html($url);
+        $doms = $content->find('li.cat42');
+        $parse_data = [];
+        $cnt = 0;
+        foreach ($doms as $key => $value) {
+            $tmp = new stdClass;
+            $tmp->source = 'tgdd';
+            $tmp->link = 'https://www.thegioididong.com' . $value->find('a', 0)->href;
+            $tmp->title = $value->find('h3', 0)->plaintext;
+
+            $tmp->image =  $value->find('img', 0)->getAttribute('data-original');
+            $sp = $value->find('strong', 0)->plaintext;
+            $sp = str_replace(".", '', $sp);
+            $sp = str_replace("₫", '', $sp);
+            $tmp->price = (float) $sp;
+
+            $parse_data[] = $tmp;
+            $cnt++;
+            if ($cnt == 20) break;
+        }
+        return $parse_data;
     }
 
     public function get_shopee_data(string $q, $sort = '')
