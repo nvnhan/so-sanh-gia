@@ -7,6 +7,8 @@ use stdClass;
 
 class HomeController extends Controller
 {
+    const MAX_COUNT = 10;
+
     //
     public function index(Request $request)
     {
@@ -18,6 +20,11 @@ class HomeController extends Controller
             $data = array_merge(
                 self::get_nguyen_kim_data(urlencode($q), $sort),
                 self::get_tgdd_data(urlencode($q), $sort),
+                self::get_hoang_ha_data(urlencode($q), $sort),
+                self::get_cellphones_data(urlencode($q), $sort),
+                
+                self::get_di_dong_viet_data(urlencode($q), $sort),
+                self::get_fpt_data(urlencode($q), $sort),
                 self::get_shopee_data(urlencode($q), $sort),
                 self::get_sendo_data(urlencode($q), $sort)
             );
@@ -59,7 +66,7 @@ class HomeController extends Controller
 
             $nguyenkim_parse_data[] = $tmp;
             $cnt++;
-            if ($cnt == 20) break;
+            if ($cnt == self::MAX_COUNT) break;
         }
         return $nguyenkim_parse_data;
     }
@@ -91,7 +98,152 @@ class HomeController extends Controller
 
             $parse_data[] = $tmp;
             $cnt++;
-            if ($cnt == 20) break;
+            if ($cnt == self::MAX_COUNT) break;
+        }
+        return $parse_data;
+    }
+
+    public function get_hoang_ha_data(string $q, $sort = '')
+    {
+        $url = "https://hoanghamobile.com/tim-kiem.html?kwd=$q";
+        if ($sort == 'price-asc')
+            $url = "https://hoanghamobile.com/tim-kiem.html?kwd=$q&sort=1";
+        else if ($sort == 'price-desc')
+            $url = "https://hoanghamobile.com/tim-kiem.html?kwd=$q&sort=2";
+
+        // Document here: https://simplehtmldom.sourceforge.io/manual.htm
+        $content = file_get_html($url);
+        $doms = $content->find('div.list-item');
+        $parse_data = [];
+        $cnt = 0;
+        foreach ($doms as $key => $value) {
+            $tmp = new stdClass;
+            $tmp->source = 'hoangha';
+            $tmp->link = 'https://www.hoanghamobile.com' . $value->find('a', 0)->href;
+            $tmp->title = $value->find('h4', 0)->plaintext;
+
+            $tmp->image =  $value->find('img', 0)->getAttribute('src');
+            $sp = $value->find('.product-price', 0)->plaintext;
+
+            $ar = explode("₫", $sp);
+            if (count($ar) > 2) $sp = $ar[1];       // Có 2 giá thì lấy cái thứ 2
+            else $sp = $ar[0];
+
+            $sp = str_replace(".", '', $sp);
+            $sp = str_replace(" ", '', $sp);
+            $tmp->price = (float) $sp;
+
+            $parse_data[] = $tmp;
+            $cnt++;
+            if ($cnt == self::MAX_COUNT) break;
+        }
+        return $parse_data;
+    }
+
+    public function get_cellphones_data(string $q, $sort = '')
+    {
+        $url = "https://cellphones.com.vn/catalogsearch/result/?q=$q";
+
+        // make request
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
+
+        $output = curl_exec($ch);
+
+        // Document here: https://simplehtmldom.sourceforge.io/manual.htm
+        $content = str_get_html($output);
+        $doms = $content->find('ul.cols-5 li');
+        $parse_data = [];
+        $cnt = 0;
+        foreach ($doms as $key => $value) {
+            $tmp = new stdClass;
+            $tmp->source = 'cellphoneS';
+            $tmp->link = $value->find('a', 0)->href;
+            $tmp->title = trim($value->find('h3', 0)->plaintext);
+
+            $tmp->image =  $value->find('img', 0)->getAttribute('src');
+            $sp = $value->find('span.price', -1)->plaintext;
+
+            $sp = str_replace(".", '', $sp);
+            $sp = str_replace(" ", '', $sp);
+            $sp = str_replace("₫", '', $sp);
+            $tmp->price = (float) $sp;
+
+            $parse_data[] = $tmp;
+            $cnt++;
+            if ($cnt == self::MAX_COUNT) break;
+        }
+        return $parse_data;
+    }
+
+    public function get_di_dong_viet_data(string $q, $sort = '')
+    {
+        $url = "https://didongviet.vn/catalogsearch/result/?q=$q";
+
+        // make request
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
+
+        $output = curl_exec($ch);
+
+        // Document here: https://simplehtmldom.sourceforge.io/manual.htm
+        $content = str_get_html($output);
+        $doms = $content->find('ol.products li.product-item');
+        $parse_data = [];
+        $cnt = 0;
+        foreach ($doms as $key => $value) {
+            $tmp = new stdClass;
+            $tmp->source = 'didongviet';
+            $tmp->link = $value->find('a', 0)->href;
+            $tmp->title = trim($value->find('h3', 0)->plaintext);
+
+            $tmp->image =  $value->find('img', 0)->getAttribute('src');
+            $sp = $value->find('span.price', 0)->plaintext;
+
+            $sp = str_replace(".", '', $sp);
+            $sp = str_replace(" ", '', $sp);
+            $sp = str_replace("₫", '', $sp);
+            $tmp->price = (float) $sp;
+
+            $parse_data[] = $tmp;
+            $cnt++;
+            if ($cnt == self::MAX_COUNT) break;
+        }
+        return $parse_data;
+    }
+
+    public function get_fpt_data(string $q, $sort = '')
+    {
+        $q = str_replace(' ', '-', $q);
+        $q = str_replace('+', '-', $q);
+        $url = "https://fptshop.com.vn/tim-kiem/$q";
+
+        // Document here: https://simplehtmldom.sourceforge.io/manual.htm
+        $content = file_get_html($url);
+        $doms = $content->find('.fs-lpitem');
+        $parse_data = [];
+        $cnt = 0;
+        foreach ($doms as $key => $value) {
+            $tmp = new stdClass;
+            $tmp->source = 'fpt';
+            $tmp->link = 'https://fptshop.com.vn' . $value->find('a', 0)->href;
+            $tmp->title = trim($value->find('h3', 0)->plaintext);
+
+            $tmp->image =  $value->find('img', 0)->getAttribute('src');
+            $sp = $value->find('p.fs-icpri', 0)->plaintext;
+
+            $sp = str_replace(".", '', $sp);
+            $sp = str_replace(" ", '', $sp);
+            $sp = str_replace("₫", '', $sp);
+            $tmp->price = (float) $sp;
+
+            $parse_data[] = $tmp;
+            $cnt++;
+            if ($cnt == self::MAX_COUNT) break;
         }
         return $parse_data;
     }
@@ -133,7 +285,7 @@ class HomeController extends Controller
 
                 $data[] = $tmp;
                 $cnt++;
-                if ($cnt == 20) break;
+                if ($cnt == self::MAX_COUNT) break;
             }
         }
 
@@ -175,7 +327,7 @@ class HomeController extends Controller
 
                 $data[] = $tmp;
                 $cnt++;
-                if ($cnt == 20) break;
+                if ($cnt == self::MAX_COUNT) break;
             }
         }
 
