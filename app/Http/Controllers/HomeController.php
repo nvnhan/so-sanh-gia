@@ -18,15 +18,15 @@ class HomeController extends Controller
 
         if (!empty($q)) {
             $data = array_merge(
-                self::get_nguyen_kim_data(urlencode($q), $sort),
-                self::get_tgdd_data(urlencode($q), $sort),
-                self::get_hoang_ha_data(urlencode($q), $sort),
-                self::get_cellphones_data(urlencode($q), $sort),
-                
-                self::get_di_dong_viet_data(urlencode($q), $sort),
-                self::get_fpt_data(urlencode($q), $sort),
-                self::get_shopee_data(urlencode($q), $sort),
-                self::get_sendo_data(urlencode($q), $sort)
+                // self::get_nguyen_kim_data(urlencode($q), $sort),
+                // self::get_tgdd_data(urlencode($q), $sort),
+                // self::get_hoang_ha_data(urlencode($q), $sort),
+                // self::get_cellphones_data(urlencode($q), $sort),
+
+                // self::get_di_dong_viet_data(urlencode($q), $sort)
+                self::get_fpt_data(urlencode($q), $sort)
+                // self::get_shopee_data(urlencode($q), $sort),
+                // self::get_sendo_data(urlencode($q), $sort)
             );
             if (empty($sort)) shuffle($data);
             else if ($sort == 'price-asc') usort($data, function ($a, $b) {
@@ -189,6 +189,8 @@ class HomeController extends Controller
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
 
         $output = curl_exec($ch);
+        $output = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $output);
+        $output = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $output);
 
         // Document here: https://simplehtmldom.sourceforge.io/manual.htm
         $content = str_get_html($output);
@@ -234,7 +236,10 @@ class HomeController extends Controller
             $tmp->title = trim($value->find('h3', 0)->plaintext);
 
             $tmp->image =  $value->find('img', 0)->getAttribute('src');
-            $sp = $value->find('p.fs-icpri', 0)->plaintext;
+            $sp = $value->find('p.fs-icpri', 0);
+            if ($sp == null)
+                continue;
+            $sp = $sp->plaintext;
 
             $sp = str_replace(".", '', $sp);
             $sp = str_replace(" ", '', $sp);
