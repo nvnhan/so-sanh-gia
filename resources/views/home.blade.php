@@ -44,6 +44,26 @@
             </div>
             <div class="content">
                 <div class="row">
+                    @foreach ($recomend as $item)
+                    <div class="col-3 {{$item->source}}">
+                        <div class="card recomend">
+                            <img src="{{$item->image}}" class="card-img-top" />
+                            <div class="card-body">
+                                <h5 class="card-title">{{$item->title}}</h5>
+                                <p class="card-text">
+                                    {{number_format($item->price)}}đ
+                                </p>
+                                <a
+                                    href="{{$item->link}}"
+                                    target="blank"
+                                    class="btn btn-primary"
+                                    >Chi tiết >></a
+                                ><br />
+                                <small>{{$item->source}}</small>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                     @foreach ($data as $item)
                     <div class="col-3 {{$item->source}}">
                         <div class="card">

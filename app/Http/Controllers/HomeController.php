@@ -15,26 +15,36 @@ class HomeController extends Controller
         $q = $request->q;
         $sort = $request->sort;
         $data = [];
+        $recomend = [];
 
         if (!empty($q)) {
             $data = array_merge(
-                // self::get_nguyen_kim_data(urlencode($q), $sort),
-                // self::get_tgdd_data(urlencode($q), $sort),
-                // self::get_hoang_ha_data(urlencode($q), $sort),
-                // self::get_cellphones_data(urlencode($q), $sort),
+                self::get_nguyen_kim_data(urlencode($q), $sort),
+                self::get_tgdd_data(urlencode($q), $sort),
+                self::get_hoang_ha_data(urlencode($q), $sort),
+                self::get_cellphones_data(urlencode($q), $sort),
 
-                // self::get_di_dong_viet_data(urlencode($q), $sort)
-                self::get_fpt_data(urlencode($q), $sort)
-                // self::get_shopee_data(urlencode($q), $sort),
-                // self::get_sendo_data(urlencode($q), $sort)
+                self::get_di_dong_viet_data(urlencode($q), $sort),
+                self::get_fpt_data(urlencode($q), $sort),
+                self::get_shopee_data(urlencode($q), $sort),
+                self::get_sendo_data(urlencode($q), $sort)
             );
+            usort($data, function ($a, $b) {
+                return strlen($a->title) > strlen($b->title);
+            });
+            $recomend = array_slice($data, 0, 3);
+            $data = array_slice($data, 3);
+
             if (empty($sort)) shuffle($data);
             else if ($sort == 'price-asc') usort($data, function ($a, $b) {
                 return $a->price > $b->price;
             });
+            else usort($data, function ($a, $b) {
+                return $a->price < $b->price;
+            });
         }
 
-        return view('home', compact('data', 'q', 'sort'));
+        return view('home', compact('recomend', 'data', 'q', 'sort'));
     }
 
     public function get_nguyen_kim_data(string $q, $sort = '')
